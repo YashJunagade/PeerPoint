@@ -1,0 +1,77 @@
+PeerPoint – Get help through your peers
+
+1. Features
+For Students Seeking Help:
+Sign Up/Login: Users sign up as students who need help.
+Request Help: Post their queries or select from categories like academic, career, personal development, etc.
+Search for Mentors: Search for seniors by college, university, or expertise.
+Chat System: One-to-one chat to ask questions privately.
+Feedback/Rating: Provide feedback for the mentor's guidance.
+For Students Helping (Seniors):
+Sign Up/Login: Users sign up as mentors.
+Provide Details: Add college, university, expertise (subjects, fields, etc.), and availability.
+Connect Requests: Receive help requests or browse questions to offer support.
+Dashboard: Track their mentorship impact (number of students helped, feedback, etc.).
+
+2. Tech Stack
+Frontend:
+HTML, CSS, JavaScript for basic UI.
+Framework: React.js (for dynamic and reusable components).
+Backend:
+Node.js with Express.js for server-side logic.
+Database: MongoDB (for storing user details, queries, feedback, etc.).
+Authentication:
+Firebase/Auth0 for simple login/sign-up.
+Hosting:
+Vercel, Netlify, or GitHub Pages for frontend.
+Render or Heroku for backend.
+
+3. Database Structure
+Collection Name	Fields
+Users	id, name, email, role (helper or seeker), college, university
+HelpRequests	id, seekerId, query, category, helperId (optional), status
+Messages	id, senderId, receiverId, message, timestamp
+Feedback	id, helperId, seekerId, rating, comment
+
+4. Features to Include
+Landing Page: Introduction to the platform, its benefits, and how it works.
+Sign-Up/Login Page: Separate roles for juniors (seekers) and seniors (helpers).
+Dashboard:
+For seekers: Post queries and view responses.
+For helpers: View pending help requests and respond.
+Profile Pages:
+Seekers can view helper profiles.
+Helpers can update their availability and expertise.
+Chat System: Simple real-time chat using WebSocket or Firebase.
+Search and Filter: Allow seekers to filter helpers based on expertise, college, or university.
+
+5. Development Steps
+Setup:
+Set up the project structure using React.js for the frontend and Node.js for the backend.
+Database:
+Create collections for users, help requests, and feedback in MongoDB.
+Authentication:
+Implement role-based authentication for seekers and helpers.
+Backend APIs:
+Create APIs for user management, help request creation, chat messaging, and feedback submission.
+Frontend Design:
+Design pages like Home, Dashboard, Profile, Help Request, etc., using Tailwind CSS for a clean UI.
+Real-Time Features:
+Add WebSocket for chat functionality or Firebase real-time database for simplicity.
+Testing and Deployment:
+Test the app thoroughly before hosting it online.
+
+6. Extra Features (If Time Allows):
+Email Notifications: Notify seniors when a new help request is posted.
+Mentorship Groups: Allow group chats for collaborative discussions.
+Gamification: Add a points/reward system for helpers based on their feedback.
+
+7. Design UI/UX (Ideas):
+Use a minimalistic and clean design.
+Sections like "Top Mentors," "Recent Queries," and "Join Us" on the homepage.
+Simple forms for sign-up and posting queries.
+
+8. Tools to Use:
+Wireframing: Use Figma to design your platform layout.
+Code Versioning: Use Git and GitHub to track your project.
+Collaboration: If working in a team, use Trello/Notion for task management.
