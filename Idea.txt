@@ -75,3 +75,123 @@ Simple forms for sign-up and posting queries.
 Wireframing: Use Figma to design your platform layout.
 Code Versioning: Use Git and GitHub to track your project.
 Collaboration: If working in a team, use Trello/Notion for task management.
+
+
+1. File Structure
+Here’s a suggested structure for your project, assuming you’re using React (frontend) and Node.js (backend):
+
+PeerPoint/
+│
+├── client/                       # Frontend
+│   ├── public/                   # Static files (images, favicon, etc.)
+│   │   ├── index.html            # Main HTML file
+│   │   ├── favicon.ico           # Favicon
+│   │   └── assets/               # Images, logos, etc.
+│   │
+│   ├── src/                      # React source files
+│   │   ├── components/           # Reusable UI components
+│   │   │   ├── Navbar.js         # Navigation bar
+│   │   │   ├── Footer.js         # Footer component
+│   │   │   └── MentorCard.js     # Card for mentors
+│   │   │
+│   │   ├── pages/                # Main pages
+│   │   │   ├── Home.js           # Landing page
+│   │   │   ├── Login.js          # Login page
+│   │   │   ├── Signup.js         # Signup page
+│   │   │   ├── Dashboard.js      # User dashboard
+│   │   │   ├── MentorList.js     # List of mentors
+│   │   │   └── Chat.js           # Chat interface
+│   │   │
+│   │   ├── styles/               # CSS files (or Tailwind integration)
+│   │   │   └── global.css        # Global styles
+│   │   │
+│   │   ├── App.js                # Main React component
+│   │   └── index.js              # React DOM rendering
+│   │
+│   ├── package.json              # Dependencies for React
+│   └── README.md                 # Frontend instructions
+│
+├── server/                       # Backend
+│   ├── config/                   # Configuration files
+│   │   ├── db.js                 # MongoDB connection setup
+│   │   └── auth.js               # JWT or authentication setup
+│   │
+│   ├── controllers/              # Backend logic
+│   │   ├── userController.js     # User-related logic
+│   │   ├── mentorController.js   # Mentor-related logic
+│   │   └── chatController.js     # Chat-related logic
+│   │
+│   ├── models/                   # Database models
+│   │   ├── User.js               # User schema
+│   │   ├── Mentor.js             # Mentor schema
+│   │   └── Chat.js               # Chat schema
+│   │
+│   ├── routes/                   # API routes
+│   │   ├── userRoutes.js         # User-related routes
+│   │   ├── mentorRoutes.js       # Mentor-related routes
+│   │   └── chatRoutes.js         # Chat-related routes
+│   │
+│   ├── middleware/               # Middleware functions
+│   │   └── authMiddleware.js     # Authentication middleware
+│   │
+│   ├── server.js                 # Main server file
+│   ├── package.json              # Dependencies for Node.js
+│   └── README.md                 # Backend instructions
+│
+├── .gitignore                    # Ignore unnecessary files in Git
+├── README.md                     # Project overview and instructions
+└── LICENSE                       # Project license (optional)
+
+
+2. Core Functionalities
+
+Frontend (React):
+Home Page: Overview of the platform, a clear call-to-action (e.g., "Join as a Mentor" or "Get Help").
+Sign-Up/Sign-In: Use Firebase/Auth0 for user authentication.
+
+Dashboard:
+For students seeking help: Search for mentors, post queries.
+For mentors: See pending requests, respond to queries.
+Search & Filter: Filter mentors by university, expertise, etc.
+Chat System: Use Firebase or Socket.io for real-time communication.
+Responsive Design: Make it mobile-friendly.
+
+Backend (Node.js + MongoDB):
+API Endpoints:
+/api/users: Manage user sign-up/login.
+/api/mentors: CRUD operations for mentors.
+/api/requests: Create and manage help requests.
+/api/chat: Send/receive chat messages.
+
+Authentication: Use JWT for secure user authentication.
+
+Database Models:
+User Model: Name, email, role (seeker/mentor), college, university, etc.
+Mentor Model: Expertise, availability, rating, feedback, etc.
+Chat Model: Messages with timestamps.
+
+3. Tools to Use
+
+Frontend:
+React.js for the UI.
+Tailwind CSS for styling.
+React Router for navigation.
+Axios for API calls.
+
+Backend:
+Node.js with Express.js.
+MongoDB for storing data.
+Mongoose for database schema and validation.
+JWT for authentication.
+Socket.io for chat.
+
+Hosting:
+Frontend: Vercel/Netlify.
+Backend: Render/Heroku.
+Database: MongoDB Atlas.
+
+4. Additional Features
+Notifications: Alert users about new requests or messages.
+Gamification: Add points for mentors based on feedback.
+Email Alerts: Notify mentors when they receive help requests.
+FAQs Section: Help students understand how the platform works.
