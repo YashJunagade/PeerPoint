@@ -5,6 +5,7 @@ const app = express();
 const authRoutes = require("./routes/authRoutes");
 const findPeerRoutes = require("./routes/findPeerRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const connectionRoutes = require("./routes/connectionRoutes");
 require("dotenv").config();
 
 app.use(cors());
@@ -22,6 +23,7 @@ mongoose
 app.use("/auth", authRoutes);
 app.use("/find", findPeerRoutes);
 app.use("/profile", profileRoutes);
+app.use("/request", connectionRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
