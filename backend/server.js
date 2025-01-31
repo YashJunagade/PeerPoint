@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
 const authRoutes = require("./routes/authRoutes");
+const findPeerRoutes = require("./routes/findPeerRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 require("dotenv").config();
 
 app.use(cors());
@@ -18,6 +20,8 @@ mongoose
   });
 
 app.use("/auth", authRoutes);
+app.use("/find", findPeerRoutes);
+app.use("/profile", profileRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
