@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const SignUp = () => {
@@ -41,11 +41,11 @@ const SignUp = () => {
 
       if (response.data) {
         // Show success toast
-        toast.success("Account created successfully!");
+        toast.success("Account created successfully!, Please Login");
 
         // Wait for a moment before redirecting
         setTimeout(() => {
-          navigate("/");
+          navigate("/Signin");
         }, 1000);
       }
     } catch (err) {
@@ -228,9 +228,9 @@ const SignUp = () => {
               className="mt-6 text-center text-gray-600"
             >
               Already have an account?{" "}
-              <a href="/signin" className="text-blue-600 hover:underline">
+              <Link to="/signin" className="text-blue-600 hover:underline">
                 Sign In
-              </a>
+              </Link>
             </motion.p>
           </motion.div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useUser } from "../store/UserContext";
 
@@ -164,9 +164,9 @@ const SignIn = () => {
               className="mt-6 text-center text-gray-600"
             >
               Don't have an account?{" "}
-              <a href="/signup" className="text-blue-600 hover:underline">
+              <Link to="/signup" className="text-blue-600 hover:underline">
                 Sign Up
-              </a>
+              </Link>
             </motion.p>
           </motion.div>
         </div>

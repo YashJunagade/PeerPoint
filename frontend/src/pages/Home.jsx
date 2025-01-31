@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ArrowRight, Users, Heart, Target } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Home() {
   const universities = [
@@ -82,10 +83,12 @@ function Home() {
                 overcome challenges and achieve more.
               </p>
               <div className="flex gap-4 pt-4">
-                <button className="group bg-blue-600 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out shadow-md hover:shadow-xl hover:bg-blue-700 transform hover:-translate-y-1">
-                  Get Started
-                  <ArrowRight className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1" />
-                </button>
+                <Link to="/FindPeer">
+                  <button className="group bg-blue-600 text-white px-8 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out shadow-md hover:shadow-xl hover:bg-blue-700 transform hover:-translate-y-1">
+                    Get Started
+                    <ArrowRight className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1" />
+                  </button>
+                </Link>
                 <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg transition-all duration-300 ease-in-out hover:bg-blue-50 hover:shadow-md transform hover:-translate-y-1">
                   Learn More
                 </button>

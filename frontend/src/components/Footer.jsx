@@ -8,6 +8,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -22,30 +23,30 @@ function Footer() {
               Connecting peers worldwide through innovative learning solutions.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="/social/facebook"
+              <Link
+                to="/social/facebook"
                 className="hover:text-blue-400 transition-colors"
               >
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="/social/twitter"
+              </Link>
+              <Link
+                to="/social/twitter"
                 className="hover:text-blue-400 transition-colors"
               >
                 <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="/social/instagram"
+              </Link>
+              <Link
+                to="/social/instagram"
                 className="hover:text-blue-400 transition-colors"
               >
                 <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="/social/linkedin"
+              </Link>
+              <Link
+                to="/social/linkedin"
                 className="hover:text-blue-400 transition-colors"
               >
                 <Linkedin className="w-5 h-5" />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -54,44 +55,44 @@ function Footer() {
             <h4 className="text-lg font-semibold text-white">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/about"
+                <Link
+                  to="/about"
                   className="hover:text-blue-400 transition-colors"
                 >
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/features"
+                <Link
+                  to="/features"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/pricing"
+                <Link
+                  to="/pricing"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/blog"
+                <Link
+                  to="/blog"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/careers"
+                <Link
+                  to="/careers"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Careers
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -101,44 +102,44 @@ function Footer() {
             <h4 className="text-lg font-semibold text-white">Support</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/help"
+                <Link
+                  to="/help"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/community"
+                <Link
+                  to="/community"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Community
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/privacy"
+                <Link
+                  to="/privacy"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/terms"
+                <Link
+                  to="/terms"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/faq"
+                <Link
+                  to="/faq"
                   className="hover:text-blue-400 transition-colors"
                 >
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -174,24 +175,24 @@ function Footer() {
             </div>
             <div className="mt-4 md:mt-0">
               <div className="flex space-x-6 text-sm">
-                <a
-                  href="/privacy"
+                <Link
+                  to="/privacy"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Privacy
-                </a>
-                <a
-                  href="/terms"
+                </Link>
+                <Link
+                  to="/terms"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Terms
-                </a>
-                <a
-                  href="/cookies"
+                </Link>
+                <Link
+                  to="/cookies"
                   className="hover:text-blue-400 transition-colors"
                 >
                   Cookies
-                </a>
+                </Link>
               </div>
             </div>
           </div>
