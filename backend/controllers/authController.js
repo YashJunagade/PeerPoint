@@ -53,6 +53,7 @@ const signIn = async (req, res) => {
     const data = {
       token,
       user: {
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
