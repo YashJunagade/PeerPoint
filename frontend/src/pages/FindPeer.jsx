@@ -3,24 +3,59 @@ import axios from "axios";
 import { Camera, Send, Search, Filter } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
+import { connectionAPI, peerAPI } from "../utils/api";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 export const FindPeer = () => {
   const [mentors, setMentors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch data from the backend
   useEffect(() => {
-    const fetchMentors = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/find/peers");
-        setMentors(response.data); // Store fetched mentors
-      } catch (error) {
-        console.error("Error fetching mentors:", error);
-      }
-    };
-
     fetchMentors();
   }, []);
+
+  const fetchMentors = async () => {
+    try {
+      setIsLoading(true);
+      const response = await peerAPI.getAllPeers();
+
+      // Retrieve the logged-in user's ID from localStorage or token
+      const userStr = localStorage.getItem("user");
+      const loggedInUserId = userStr ? JSON.parse(userStr)._id : null; // Adjust based on your user structure
+
+      // Filter out the logged-in user
+      const filteredMentors = response.data.filter(
+        (mentor) => mentor._id !== loggedInUserId
+      );
+
+      setMentors(filteredMentors);
+    } catch (error) {
+      console.error("Error fetching mentors:", error);
+      toast.error("Failed to load mentors");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConnect = async (mentorId) => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        toast.error("Please log in to connect with mentors");
+        return;
+      }
+
+      await connectionAPI.sendRequest(mentorId);
+      toast.success("Connection request sent successfully!");
+    } catch (error) {
+      console.error("Error sending connection request:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to send connection request";
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <>
@@ -65,7 +100,6 @@ export const FindPeer = () => {
                       field.toLowerCase().includes(searchTerm.toLowerCase())
                   )
                 )
-
                 .map((mentor, index) => (
                   <motion.div
                     key={mentor._id}
@@ -88,12 +122,12 @@ export const FindPeer = () => {
                       </motion.div>
                       <div>
                         <h3 className="font-semibold">
-                          <a
-                            href={`Profile/${mentor._id}`}
+                          <Link
+                            to={`/Profile/${mentor._id}`}
                             className="text-blue-600 hover:underline"
                           >
                             {mentor.name}
-                          </a>
+                          </Link>
                         </h3>
                         <p className="text-sm text-gray-600">
                           {mentor.university}
@@ -122,6 +156,7 @@ export const FindPeer = () => {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => handleConnect(mentor._id)}
                         >
                           Connect
                         </motion.button>
