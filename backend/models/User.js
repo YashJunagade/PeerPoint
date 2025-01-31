@@ -75,6 +75,12 @@ const userSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    connections: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     stats: {
       mentored: {
         type: Number,
