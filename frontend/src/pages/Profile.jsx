@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -12,6 +12,9 @@ import {
   MessageCircle,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { useParams } from "react-router-dom";
+import ProfileEditModal from "../components/ProfileEditModal";
+import * as jwt from "jwt-decode";
 
 const Card = ({ children, className = "" }) => (
   <div className={`bg-white rounded-xl shadow-md ${className}`}>{children}</div>
@@ -22,32 +25,117 @@ const CardContent = ({ children, className = "" }) => (
 );
 
 const Profile = () => {
-  const [user] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "Mentor",
-    college: "St. Xavier's College",
-    university: "University of Mumbai",
-    expertise: ["Data Structures", "Algorithms", "Web Development"],
-    rating: 4.8,
-    bio: "Passionate about helping students excel in computer science. Specialized in algorithms and web development with 3 years of mentoring experience.",
-    achievements: [
-      "Helped 50+ students",
-      "4.8 average rating",
-      "Top Mentor 2023",
-    ],
-    stats: {
-      mentored: 54,
-      sessions: 120,
-      hours: 180,
-    },
-  });
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
+
+  useEffect(() => {
+    // Check if this is the user's own profile
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwt.jwtDecode(token);
+        // If no ID in URL (viewing /profile/me) OR if ID matches token's user ID
+        setIsOwnProfile(!id || decoded.userId === id);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setIsOwnProfile(false);
+      }
+    }
+  }, [id]);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("token");
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (!id) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(
+        `http://localhost:3000/profile/${id ? id : "me"}`,
+        {
+          headers,
+        }
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      setUser(data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, [id]);
+
+  const handleProfileUpdate = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading profile...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600">Error loading profile: {error}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-600">No user data found</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Rest of your JSX remains the same, but now it's safe because we know user exists */}
           {/* Profile Header */}
           <div className="relative mb-20 sm:mb-24">
             {/* Cover Image */}
@@ -57,13 +145,10 @@ const Profile = () => {
             <div className="absolute left-1/2 sm:left-8 -bottom-16 transform -translate-x-1/2 sm:translate-x-0">
               <div className="relative">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-white p-1">
-                  <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center relative overflow-hidden">
-                    <User className="w-14 h-14 sm:w-16 sm:h-16 text-gray-400" />
-                    <button className="absolute bottom-0 w-full h-8 bg-black/50 text-white flex items-center justify-center gap-2 text-xs sm:text-sm hover:bg-black/60 transition-colors">
-                      <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="hidden sm:inline">Change</span>
-                      <span className="sm:hidden">Upload</span>
-                    </button>
+                  <div className="w-full h-full rounded-full flex items-center bg-blue-600 justify-center relative overflow-hidden">
+                    <span className="text-white text-3xl font-semibold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : ""}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -71,10 +156,24 @@ const Profile = () => {
 
             {/* Quick Actions */}
             <div className="absolute left-0 sm:left-auto right-0 -bottom-28 sm:-bottom-16 flex flex-col sm:flex-row gap-2 sm:gap-4 px-4 sm:px-0 sm:right-8 w-full sm:w-auto">
-              <button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors shadow-lg text-sm sm:text-base">
-                <Edit2 className="w-4 h-4" />
-                Edit Profile
-              </button>
+              {isOwnProfile && (
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors shadow-lg text-sm sm:text-base"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Edit Profile
+                </button>
+              )}
+              {/* Add the Edit Modal */}
+              {isOwnProfile && (
+                <ProfileEditModal
+                  user={user}
+                  isOpen={isEditModalOpen}
+                  onClose={() => setIsEditModalOpen(false)}
+                  onUpdate={handleProfileUpdate}
+                />
+              )}
               <button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white text-blue-600 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors shadow-lg border border-blue-600 text-sm sm:text-base">
                 <MessageCircle className="w-4 h-4" />
                 Message
@@ -120,7 +219,7 @@ const Profile = () => {
                     Expertise
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {user.expertise.map((skill, index) => (
+                    {user.expertise?.map((skill, index) => (
                       <span
                         key={index}
                         className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs sm:text-sm"
@@ -140,7 +239,7 @@ const Profile = () => {
                 <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                   <CardContent className="text-center py-3 sm:py-6">
                     <h3 className="text-2xl sm:text-3xl font-bold mb-1">
-                      {user.stats.mentored}
+                      {user.stats?.mentored}
                     </h3>
                     <p className="text-blue-100 text-sm sm:text-base">
                       Students Mentored
@@ -150,7 +249,7 @@ const Profile = () => {
                 <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
                   <CardContent className="text-center py-3 sm:py-6">
                     <h3 className="text-2xl sm:text-3xl font-bold mb-1">
-                      {user.stats.sessions}
+                      {user.stats?.sessions}
                     </h3>
                     <p className="text-green-100 text-sm sm:text-base">
                       Sessions Completed
@@ -160,7 +259,7 @@ const Profile = () => {
                 <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
                   <CardContent className="text-center py-3 sm:py-6">
                     <h3 className="text-2xl sm:text-3xl font-bold mb-1">
-                      {user.stats.hours}
+                      {user.stats?.hours}
                     </h3>
                     <p className="text-purple-100 text-sm sm:text-base">
                       Hours Spent
@@ -189,7 +288,7 @@ const Profile = () => {
                     Achievements
                   </h3>
                   <div className="space-y-3 sm:space-y-4">
-                    {user.achievements.map((achievement, index) => (
+                    {user.achievements?.map((achievement, index) => (
                       <div
                         key={index}
                         className="flex items-center gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
