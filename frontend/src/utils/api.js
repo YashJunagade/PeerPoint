@@ -46,6 +46,8 @@ export const peerAPI = {
   getPeerById: (id) => api.get(`/find/peers/${id}`),
 };
 
-export const messengerAPI = {};
+export const messengerAPI = {
+  getPendingRequests: () => api.get("/messages"),
+};
 
 export default api;
