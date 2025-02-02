@@ -9,6 +9,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Add a request interceptor to add auth token
@@ -45,9 +46,19 @@ export const peerAPI = {
   getAllPeers: () => api.get("/find/peers"),
   getPeerById: (id) => api.get(`/find/peers/${id}`),
 };
-
 export const messengerAPI = {
-  getPendingRequests: () => api.get("/messages"),
+  // Get all messages for a conversation
+  getMessages: (userId) => api.get(`/messages/${userId}`),
+
+  // Get list of conversations
+  getConversations: () => api.get("/messages"),
+
+  // Send a new message
+  sendMessage: (receiverId, content) =>
+    api.post("/messages", { receiverId, content }),
+
+  // Mark message as read
+  markAsRead: (messageId) => api.patch(`/messages/${messageId}/read`),
 };
 
 export default api;
