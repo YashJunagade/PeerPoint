@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Camera, Send, Search, Filter } from "lucide-react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { connectionAPI, peerAPI } from "../utils/api";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
 
 export const FindPeer = () => {
   const [mentors, setMentors] = useState([]);
@@ -19,15 +18,28 @@ export const FindPeer = () => {
   const fetchMentors = async () => {
     try {
       setIsLoading(true);
-      const response = await peerAPI.getAllPeers();
-
-      // Retrieve the logged-in user's ID from localStorage or token
       const userStr = localStorage.getItem("user");
-      const loggedInUserId = userStr ? JSON.parse(userStr)._id : null; // Adjust based on your user structure
+      const currentUser = userStr ? JSON.parse(userStr) : null;
 
-      // Filter out the logged-in user
-      const filteredMentors = response.data.filter(
-        (mentor) => mentor._id !== loggedInUserId
+      if (!currentUser) {
+        toast.error("Please log in to view mentors");
+        return;
+      }
+
+      // Get the user's connections array
+      const userConnections = currentUser.connections || [];
+      console.log(currentUser);
+
+      // Fetch all peers
+      const mentorsResponse = await peerAPI.getAllPeers();
+
+      // Filter out:
+      // 1. The logged-in user
+      // 2. Users who are in the connections array
+      const filteredMentors = mentorsResponse.data.filter(
+        (mentor) =>
+          mentor._id !== currentUser._id &&
+          !userConnections.includes(mentor._id)
       );
 
       setMentors(filteredMentors);
@@ -49,6 +61,9 @@ export const FindPeer = () => {
 
       await connectionAPI.sendRequest(mentorId);
       toast.success("Connection request sent successfully!");
+
+      // Refresh the mentor list to remove the newly connected mentor
+      await fetchMentors();
     } catch (error) {
       console.error("Error sending connection request:", error);
       const errorMessage =
@@ -92,12 +107,16 @@ export const FindPeer = () => {
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {mentors.length > 0 ? (
+            {isLoading ? (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                Loading mentors...
+              </div>
+            ) : mentors.length > 0 ? (
               mentors
                 .filter((mentor) =>
                   [mentor.name, mentor.university, mentor.college].some(
                     (field) =>
-                      field.toLowerCase().includes(searchTerm.toLowerCase())
+                      field?.toLowerCase().includes(searchTerm.toLowerCase())
                   )
                 )
                 .map((mentor, index) => (
@@ -112,7 +131,7 @@ export const FindPeer = () => {
                     <div className="flex items-start gap-4">
                       <motion.div
                         whileHover={{ scale: 1.1 }}
-                        className="w-16 h-16 rounded-full flex items-center justify-center  bg-blue-600"
+                        className="w-16 h-16 rounded-full flex items-center justify-center bg-blue-600"
                       >
                         <span className="text-white text-lg font-semibold">
                           {mentor.name
@@ -150,7 +169,7 @@ export const FindPeer = () => {
                       </p>
                       <div className="mt-4 flex justify-between items-center">
                         <span className="text-sm text-gray-600">
-                          {/* ⭐ 4.8 (24 reviews) */}
+                          {mentor.rating > 0 && `⭐ ${mentor.rating}`}
                         </span>
                         <motion.button
                           whileHover={{ scale: 1.05 }}

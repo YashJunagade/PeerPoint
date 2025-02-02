@@ -59,6 +59,7 @@ const signIn = async (req, res) => {
         role: user.role,
         college: user.college,
         university: user.university,
+        connections: user.connections,
       },
     };
 
