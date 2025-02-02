@@ -28,7 +28,6 @@ export const FindPeer = () => {
 
       // Get the user's connections array
       const userConnections = currentUser.connections || [];
-      console.log(currentUser);
 
       // Fetch all peers
       const mentorsResponse = await peerAPI.getAllPeers();
