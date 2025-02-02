@@ -7,22 +7,25 @@ import Messenger from "./pages/Messenger";
 import Profile from "./pages/Profile";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "./store/UserContext";
+import { SocketProvider } from "./store/UseSocket";
 
 function App() {
   return (
     <>
       <Toaster position="bottom-right" />
       <UserProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signIn" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/Profile/:id" element={<Profile />} />
-            <Route path="/FindPeer" element={<FindPeer />} />
-            <Route path="/Messenger" element={<Messenger />} />
-          </Routes>
-        </Router>
+        <SocketProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/signIn" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/Profile/:id" element={<Profile />} />
+              <Route path="/FindPeer" element={<FindPeer />} />
+              <Route path="/Messenger" element={<Messenger />} />
+            </Routes>
+          </Router>
+        </SocketProvider>
       </UserProvider>
     </>
   );
