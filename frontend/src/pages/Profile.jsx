@@ -174,10 +174,6 @@ const Profile = () => {
                   onUpdate={handleProfileUpdate}
                 />
               )}
-              <button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-white text-blue-600 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors shadow-lg border border-blue-600 text-sm sm:text-base">
-                <MessageCircle className="w-4 h-4" />
-                Message
-              </button>
             </div>
           </div>
 
