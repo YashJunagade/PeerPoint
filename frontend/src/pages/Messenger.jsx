@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, Send, Search, ArrowLeft, Check } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Send, Search, ArrowLeft } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { messengerAPI } from "../utils/api";
 import { useUser } from "../store/UserContext";
@@ -17,14 +17,6 @@ const Messenger = () => {
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const lastMessageLengthRef = useRef(messages.length);
-
-  // Video call state
-  const [isCalling, setIsCalling] = useState(false);
-  const [localStream, setLocalStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [peer, setPeer] = useState(null);
-  const [callerId, setCallerId] = useState(null);
-  const [callerName, setCallerName] = useState("");
 
   // Handle window resize
   useEffect(() => {
@@ -104,7 +96,7 @@ const Messenger = () => {
   };
 
   // Send message
-  const sendMessage = useCallback(() => {
+  const sendMessage = () => {
     if (!newMessage.trim() || !selectedChat?._id || !socket || !user?._id)
       return;
     const messageData = {
@@ -126,183 +118,12 @@ const Messenger = () => {
     requestAnimationFrame(() => {
       inputRef.current?.focus();
     });
-  }, [newMessage, selectedChat, socket, user]);
-
-  // Start local media stream
-  const startLocalStream = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setLocalStream(stream);
-    } catch (error) {
-      console.error("Failed to get local media stream:", error);
-    }
   };
 
-  // Create WebRTC peer
-  const createPeer = (initiator) => {
-    const newPeer = new SimplePeer({
-      initiator,
-      stream: localStream,
-    });
-
-    newPeer.on("signal", (data) => {
-      socket.emit("signal", { to: selectedChat._id, signalData: data });
-    });
-
-    newPeer.on("stream", (stream) => {
-      setRemoteStream(stream);
-    });
-
-    newPeer.on("error", (error) => {
-      console.error("WebRTC error:", error);
-    });
-
-    setPeer(newPeer);
+  const formatMessageTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
-  // Start a call
-  const startCall = async () => {
-    await startLocalStream();
-    createPeer(true);
-    setIsCalling(true);
-    socket.emit("video_call_request", {
-      receiverId: selectedChat._id,
-      senderId: user._id,
-      senderName: user.name,
-    });
-  };
-
-  // Answer a call
-  const answerCall = async () => {
-    await startLocalStream();
-    createPeer(false);
-    setIsCalling(true);
-    socket.emit("video_call_answer", {
-      senderId: callerId,
-      answer: peer?.signalData,
-    });
-  };
-
-  // End a call
-  const endCall = () => {
-    if (peer) {
-      peer.destroy();
-      setPeer(null);
-    }
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-      setLocalStream(null);
-    }
-    setRemoteStream(null);
-    setIsCalling(false);
-    setCallerId(null);
-    setCallerName("");
-  };
-
-  // Listen for incoming call requests
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("video_call_request", ({ senderId, senderName }) => {
-      setCallerId(senderId);
-      setCallerName(senderName);
-      const confirmCall = window.confirm(
-        `Incoming call from ${senderName}. Accept?`
-      );
-      if (confirmCall) {
-        answerCall();
-      }
-    });
-
-    return () => {
-      socket.off("video_call_request");
-    };
-  }, [socket]);
-
-  // Listen for call answers
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("video_call_answer", ({ answer }) => {
-      if (peer) {
-        peer.signal(answer);
-      }
-    });
-
-    return () => {
-      socket.off("video_call_answer");
-    };
-  }, [socket, peer]);
-
-  // Listen for ICE candidates
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("candidate", (candidate) => {
-      if (peer) {
-        peer.signal(candidate);
-      }
-    });
-
-    return () => {
-      socket.off("candidate");
-    };
-  }, [socket, peer]);
-
-  // Listen for user disconnection
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("user_disconnected", ({ userId }) => {
-      if (userId === selectedChat?._id) {
-        endCall();
-      }
-    });
-
-    return () => {
-      socket.off("user_disconnected");
-    };
-  }, [socket, selectedChat]);
-
-  // Render video call UI
-  const renderVideoCall = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-        <div className="flex space-x-4">
-          <div className="w-1/2">
-            <video
-              ref={(video) => {
-                if (video) video.srcObject = localStream;
-              }}
-              autoPlay
-              muted
-              className="w-full h-64 rounded-lg shadow-md"
-            />
-          </div>
-          <div className="w-1/2">
-            <video
-              ref={(video) => {
-                if (video) video.srcObject = remoteStream;
-              }}
-              autoPlay
-              className="w-full h-64 rounded-lg shadow-md"
-            />
-          </div>
-        </div>
-        <div className="mt-4 flex justify-center space-x-4">
-          <button
-            onClick={endCall}
-            className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600"
-          >
-            <PhoneOff size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   const ChatList = React.memo(() => (
     <div className="w-full sm:w-1/3 border-r bg-white p-4 h-[calc(100vh-64px)] sm:h-full">
@@ -348,16 +169,11 @@ const Messenger = () => {
     </div>
   ));
 
-  const formatMessageTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const ChatView = React.memo(() => (
     <div className="flex-1 flex flex-col h-[calc(100vh-64px)] sm:h-full bg-gray-50">
       {selectedChat ? (
         <>
-          {/* Enhanced Header */}
+          {/* Header */}
           <div className="bg-white p-4 border-b shadow-sm">
             <div className="flex items-center gap-3">
               {isMobileView && (
@@ -380,7 +196,7 @@ const Messenger = () => {
               </div>
             </div>
           </div>
-          {/* Enhanced Chat Container */}
+          {/* Chat Container */}
           <div
             ref={chatContainerRef}
             className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50"
@@ -433,16 +249,13 @@ const Messenger = () => {
                       <span className="text-gray-500">
                         {formatMessageTime(message.timestamp)}
                       </span>
-                      {isUserMessage && (
-                        <Check size={14} className="text-gray-500" />
-                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-          {/* Enhanced Input Area */}
+          {/* Input Area */}
           <div className="bg-white p-4 border-t">
             <div className="flex items-center gap-3 max-w-4xl mx-auto">
               <input
@@ -475,9 +288,6 @@ const Messenger = () => {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <Camera className="text-blue-600" size={32} />
-          </div>
           <p className="text-lg font-medium">
             Select a chat to start messaging
           </p>
@@ -503,7 +313,6 @@ const Messenger = () => {
           </>
         )}
       </div>
-      {isCalling && renderVideoCall()}
     </>
   );
 };
