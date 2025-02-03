@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
-import { toast } from "react-hot-toast"; // Assuming you're using react-hot-toast for notifications
+import { toast } from "react-hot-toast";
 import { connectionAPI } from "../utils/api";
 
 const ConnectionRequests = () => {

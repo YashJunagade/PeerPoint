@@ -4,7 +4,7 @@ const User = require("../models/User");
 exports.sendConnectionRequest = async (req, res) => {
   try {
     const { receiverId, sender } = req.body;
-    const senderId = sender; // Assuming you have auth middleware
+    const senderId = sender;
 
     // Check if request already exists
     const existingRequest = await ConnectionRequest.findOne({
