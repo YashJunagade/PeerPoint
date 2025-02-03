@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "./store/UserContext";
 import { SocketProvider } from "./store/UseSocket";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   return (
@@ -22,7 +23,10 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/Profile/:id" element={<Profile />} />
               <Route path="/FindPeer" element={<FindPeer />} />
-              <Route path="/Messenger" element={<Messenger />} />
+              <Route
+                path="/Messenger"
+                element={<PrivateRoute element={<Messenger />} />}
+              />
             </Routes>
           </Router>
         </SocketProvider>
