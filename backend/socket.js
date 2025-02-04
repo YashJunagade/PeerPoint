@@ -20,7 +20,12 @@ exports.initSocket = (server) => {
       if (!userId) return;
       socket.userId = userId;
       userSockets.set(userId, socket.id);
-      console.log(`User ${userId} connected with socket ID ${socket.id}`);
+
+      // Broadcast updated online users to all clients
+      const onlineUsers = Array.from(userSockets.keys());
+      io.emit("online_users", onlineUsers);
+
+      console.log(`User ${userId} connected. Online users: ${onlineUsers}`);
     });
 
     socket.on("send_message", async (data) => {
@@ -63,7 +68,14 @@ exports.initSocket = (server) => {
     socket.on("disconnect", () => {
       if (socket.userId) {
         userSockets.delete(socket.userId);
-        console.log(`User ${socket.userId} disconnected`);
+
+        // Broadcast updated online users after disconnect
+        const onlineUsers = Array.from(userSockets.keys());
+        io.emit("online_users", onlineUsers);
+
+        console.log(
+          `User ${socket.userId} disconnected. Online users: ${onlineUsers}`
+        );
       }
     });
   });

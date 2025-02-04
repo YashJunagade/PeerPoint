@@ -14,9 +14,29 @@ const Messenger = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const lastMessageLengthRef = useRef(messages.length);
+
+  // Track online users
+  useEffect(() => {
+    if (!socket) return;
+
+    // Listen for online users update
+    socket.on("online_users", (users) => {
+      setOnlineUsers(new Set(users));
+    });
+
+    // Emit user connection
+    if (user?._id) {
+      socket.emit("user_connected", user._id);
+    }
+
+    return () => {
+      socket.off("online_users");
+    };
+  }, [socket, user]);
 
   // Handle window resize
   useEffect(() => {
@@ -151,13 +171,21 @@ const Messenger = () => {
                 selectedChat?._id === connection._id ? "bg-gray-50" : ""
               }`}
             >
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="relative w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-lg">
                   {connection.name.charAt(0).toUpperCase()}
                 </span>
+                {onlineUsers.has(connection._id) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold">{connection.name}</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-semibold">{connection.name}</h4>
+                  {onlineUsers.has(connection._id) && (
+                    <span className="text-xs text-green-600">Online</span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600 truncate">
                   {connection.email}
                 </p>
@@ -184,15 +212,21 @@ const Messenger = () => {
                   <ArrowLeft size={20} />
                 </button>
               )}
-              <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+              <div className="relative w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
                 <span className="text-white font-semibold text-lg">
                   {selectedChat.name.charAt(0).toUpperCase()}
                 </span>
+                {onlineUsers.has(selectedChat._id) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                )}
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-800">
                   {selectedChat.name}
                 </h3>
+                {onlineUsers.has(selectedChat._id) && (
+                  <p className="text-sm text-green-600">Online</p>
+                )}
               </div>
             </div>
           </div>
